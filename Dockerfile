@@ -1,5 +1,5 @@
 FROM debian:jessie
-MAINTAINER Jose Sanchez-Garcia "jose.sanchezgarcia@blackrock.com"
+MAINTAINER Jose Sanchez-Garcia "josebsan96@gmail.com"
 
 # This should solve the failed connection to socket error that occurs when running eclipse
 RUN export NO_AT_BRIDGE=1
