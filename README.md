@@ -1,12 +1,12 @@
-# eclipse-docker
+# Eclipse IDE inside Docker container
 Created a virtual environment using Docker that would allow me to create and save projects using the Eclipse Mars 2 IDE. The Eclipse itself would run within the Virtual Environment, but the GUI itself would be displayed on the host screen through X11 forwarding
-# Requirements
+## Requirements
 - Docker 1.11.2
 - X11 forwarding set up
 
 ## Configre work directory
 When it comes to using this project in your Linux computer, we first need to create some directories that would be used to keep plugins and projects persistent when starting and stopping the Dockerfile. 
-```sh
+```
 mkdir -p .eclipse-docker
 mkdir workspaces
 ```
