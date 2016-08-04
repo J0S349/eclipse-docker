@@ -15,34 +15,29 @@ ENV PYTHON_DOWNLOAD_LINK https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tg
 # Eclipse Dev environment will be here
 ENV DEFAULT_ECLIPSE_ENVIRONMENT /usr/local/
 
-# Install any necessary packages that will be used within the programs
-  RUN apt-get update && apt-get -y upgrade && \
-  # apt-get install -y software-properties-common curl && \
+# Install any necessary packages that will be used within the program
+  RUN apt-get update && apt-get -y upgrade
   # install apt-utils cause it keeps giving an error message
-  apt-get install -y apt-utils && \
+  RUN apt-get install -y apt-utils
   # install wget to retrieve source file from python website
-  apt-get install -y wget && \
+  RUN apt-get install -y wget
   # Install this to be able to load up pk-gtk-module for Eclipse
-  apt-get install -y packagekit-gtk3-module && \
+  RUN apt-get install -y packagekit-gtk3-module
   # install essential packages for compiling C/C++ programs on Debian/Ubuntu linux
-  apt-get install -y build-essential && \
-  # install this to make sure pip3 is installed along side Python 3.5
-  apt-get install -y libssl-dev && \
-  # this would allow you to backspace and delete within python interactive shell (if necessary)
-  apt-get install -y libreadline-dev && \
+  RUN apt-get install -y build-essential
   # install curl to get packages
-  apt-get install -y curl && \
+  RUN apt-get install -y curl
   # Also, in Debian Jessie, there is no Sudoers.d file, so we will need to install Sudo itself
-  apt-get install -y sudo
+  RUN apt-get install -y sudo
 
 # Installs the latest Oracle JDK 8through the addition of repositories
 RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" >> /etc/apt/sources.list.d/java-8-debian.list && \
     echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" >> /etc/apt/sources.list.d/java-8-debian.list && \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 && \
     apt-get update && \
+    # This is how you accept the Oracle License agreement
     echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections && \
     apt-get install -y oracle-java8-installer
-
 
 # Now we need to unpackage the JDK folder and move it to another directory next to the JVM folder
 RUN mkdir /usr/lib/jdk && \
@@ -51,14 +46,10 @@ RUN mkdir /usr/lib/jdk && \
     # Since we don't want to worrry about specific names, we change the name of the folder
     # and give it a generic name.
     mv /usr/lib/jdk/jdk* /usr/lib/jdk/OracleJDK8 && \
-
-    #apt-get install -y oracle-java8-set-default && \
+    # Sets the JAVA_HOME variables to point to the JDK 8
     echo "export JAVA_HOME=/usr/lib/jdk/OracleJDK8/" >> ~/.bashrc && \
     echo "export PATH=/usr/lib/jdk/OracleJDK8/bin:$PATH" >> ~/.bashrc && \
-    . ~/.bashrc && \
-    echo $JAVA_HOME
-
-
+    . ~/.bashrc
 
 # Install Python 3.5 from source file
   # download python source file from website
@@ -84,6 +75,7 @@ ENV PATH ${PATH}:/opt/ant/bin
 # This will download te Eclipse IDE and unpackage it
 RUN curl "$ECLIPSE_DOWNLOAD_LINK" | tar vxz -C $DEFAULT_ECLIPSE_ENVIRONMENT
 
+# This will be used change eclipse.ini file so that it require Java 8 to work
 COPY change_config.py /usr/local/eclipse/
 RUN python3 /usr/local/eclipse/change_config.py && \
   # Add this to prevent the error 1 code from happening when starting eclipse
@@ -92,7 +84,6 @@ RUN python3 /usr/local/eclipse/change_config.py && \
 
 # Cleanse the build environment
 RUN apt-get --purge autoremove -y && apt-get clean
-
 # This will allow us to set up  a connection between the virtual environment and the host
 # machine to allow us to display the eclipse GUI through the host machine
 RUN chmod +x $DEFAULT_ECLIPSE_ENVIRONMENT/eclipse/eclipse && \
