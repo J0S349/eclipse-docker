@@ -17,7 +17,7 @@ ENV DEFAULT_ECLIPSE_ENVIRONMENT /usr/local/
 
 # Install any necessary packages that will be used within the programs
   RUN apt-get update && apt-get -y upgrade && \
-  apt-get install -y software-properties-common curl && \
+  # apt-get install -y software-properties-common curl && \
   # install apt-utils cause it keeps giving an error message
   apt-get install -y apt-utils && \
   # install wget to retrieve source file from python website
@@ -33,25 +33,31 @@ ENV DEFAULT_ECLIPSE_ENVIRONMENT /usr/local/
   # install curl to get packages
   apt-get install -y curl && \
   # Also, in Debian Jessie, there is no Sudoers.d file, so we will need to install Sudo itself
-  apt-get install sudo
+  apt-get install -y sudo
 
-# Install Oracle Java 8 through the addition of repositories
+# Installs the latest Oracle JDK 8through the addition of repositories
 RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" >> /etc/apt/sources.list.d/java-8-debian.list && \
     echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" >> /etc/apt/sources.list.d/java-8-debian.list && \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 && \
     apt-get update && \
     echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections && \
-    apt-get install -y oracle-java8-installer && \
-    apt-get install -y oracle-java8-set-default && \
-    echo "export JAVA_HOME=/usr/lib/jdk/jdk1.8.0_91/" >> ~/.bashrc && \
-    echo "export PATH=/usr/lib/jdk/jdk1.8.0_91/bin:$PATH" >> ~/.bashrc && \
+    apt-get install -y oracle-java8-installer
+
+
+# Now we need to unpackage the JDK folder and move it to another directory next to the JVM folder
+RUN mkdir /usr/lib/jdk && \
+    # This will unzip any jdk 8 version that we is downloaded
+    tar xvf /var/cache/oracle-jdk8-installer/jdk* -C /usr/lib/jdk && \
+    # Since we don't want to worrry about specific names, we change the name of the folder
+    # and give it a generic name.
+    mv /usr/lib/jdk/jdk* /usr/lib/jdk/OracleJDK8 && \
+
+    #apt-get install -y oracle-java8-set-default && \
+    echo "export JAVA_HOME=/usr/lib/jdk/OracleJDK8/" >> ~/.bashrc && \
+    echo "export PATH=/usr/lib/jdk/OracleJDK8/bin:$PATH" >> ~/.bashrc && \
     . ~/.bashrc && \
     echo $JAVA_HOME
 
-# Now we need to unpackage the JDK folder and move it to another directory next to the JVM folder
-RUN tar xf /var/cache/oracle-jdk8-installer/jdk-8u91-linux-x64.tar.gz && \
-    mkdir /usr/lib/jdk && \
-    mv jdk1.8.0_91 /usr/lib/jdk
 
 
 # Install Python 3.5 from source file
