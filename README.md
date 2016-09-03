@@ -45,4 +45,4 @@ When you are prompted from Eclipse as to where you want your workspace to be. Pu
 This is mainly due to this being the shared folder to save projects between the Virtual Machine and Linux host.
 
 ## Eclipse IDE not appearing
-After executing the runEcilpse.sh and an error occurred, then there could be an issue with X11 forwarding. Try running this command ```xhost +``` to fix this issue. 
+After executing the runEcilpse.sh and an error occurred, then there could be an issue with X11 forwarding. On Linux, try running this command ```xhost +``` to fix this issue. 
